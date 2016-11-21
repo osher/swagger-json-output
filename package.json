@@ -18,12 +18,16 @@
     "url": "https://github.com/osher/swagger-output/issues"
   },
   "homepage": "https://github.com/osher/swagger-output#readme",
-  "dependencies": {},
+  "dependencies": {
+    "debug": "^2.3.3",
+    "lodash": "^4.17.2"
+  },
   "devDependencies": {
-    "istanbul": "*",
     "husky": "^0.11.3",
+    "istanbul": "*",
+    "mocha": "~2.3.4",
     "mocha-ui-exports": "^1.0.1",
-    "mocha": "~2.3.4"
+    "should": "^11.1.1"
   },
   "publishConfig": {
     "registry": "http://registry.npmjs.com/"
