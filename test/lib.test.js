@@ -1,8 +1,15 @@
 process.env.TEST_MODE = true;
-var sut = require('../')
+var sut     = require('../');
+var request = require('mocha-ui-exports-request');
+var e2e     = require('./util/e2e');
 
 module.exports = { 
-  "swagger-result" : { 
+  "swagger-result" : {
+    beforeAll: e2e({
+      svc:          "test/fixtures/my-svc/app.js",
+      logPath:      "./e2e-log.log"
+    }),
+    afterAll: e2e.tearDown,
     "should be a factory function that names 2 arguments - fittingDef, bagpipes" : function() {
         Should(sut)
           .be.a.Function()
@@ -17,7 +24,9 @@ module.exports = {
     },
     "when named as last step on controller pipe for operation that produces `application/json`" : {
       "and controller leaves ctx.output that cannot be serialized" : serializationErrorSuire({}),
-      "and controller leaves ctx.output that serializes successfully" : serializationOkSuite({})
+      "and controller leaves ctx.output that serializes successfully" : serializationOkSuite({
+        path: "/hello"
+      })
     },
     "when named as onError pipe handler for operations that produce `application/json`" : {
       "and a fitting in the pipe leaves error on context" : errorCaseSuite({
@@ -38,7 +47,7 @@ module.exports = {
       }
     }
   }
-}
+};
 
 function errorCaseSuite(ctx) {
     
@@ -101,7 +110,8 @@ function serializationErrorSuire(ctx) {
 function serializationOkSuite(ctx) { 
     return {
       beforeAll: function(done) {
-          done()
+
+        done()
       },      
       "statusCode should be as meant by controller method" : null,
       "body should be as passed by controller method" : null
