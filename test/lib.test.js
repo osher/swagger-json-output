@@ -19,9 +19,15 @@ module.exports = {
       "and controller leaves ctx.output that serializes successfully" : serializationOkSuite({})
     },
     "when named as onError pipe handler for operations that produce `application/json`" : {
-      "and a fitting in the pipe leaves error on context" : errorCaseSuite({}),
-      "and a fitting in the pipe throws error" : errorCaseSuite({}),
-      "and a fitting in the pipe yields an error" : errorCaseSuite({}),
+      "and a fitting in the pipe leaves error on context" : errorCaseSuite({
+        path: "/operation-leaves-error"
+      }),
+      "and a fitting in the pipe throws error" : errorCaseSuite({
+        path: "/operation-throws"
+      }),
+      "and a fitting in the pipe yields an error" : errorCaseSuite({
+        path: "/operation-yields-error"
+      }),
       "and no error is yielded, thrown or left on cotnext" : serializationOkSuite({}),
       "and content-type left on the response does not match the content-type declared by produces" : {
         "should correct the content-type" : null,
@@ -78,6 +84,10 @@ function errorCaseSuite(ctx) {
 
 function serializationErrorSuire(ctx) {
     return {
+      beforeAll: function(done) {
+          
+          done()
+      },
       "response.statusCode should be 500" : null,
       "response.body" : {
         "should have .message : unable to stringify body properly" : null,
@@ -89,6 +99,9 @@ function serializationErrorSuire(ctx) {
 
 function serializationOkSuite(ctx) { 
     return {
+      beforeAll: function(done) {
+          done()
+      },      
       "statusCode should be as meant by controller method" : null,
       "body should be as passed by controller method" : null
     }
