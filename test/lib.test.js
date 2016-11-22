@@ -1,3 +1,4 @@
+process.env.TEST_MODE = true;
 var sut = require('../')
 
 module.exports = { 
