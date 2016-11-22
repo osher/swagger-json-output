@@ -23,11 +23,14 @@
     "lodash": "^4.17.2"
   },
   "devDependencies": {
+    "connect": "^3.5.0",
     "husky": "^0.11.3",
     "istanbul": "*",
     "mocha": "~2.3.4",
     "mocha-ui-exports": "^1.0.1",
-    "should": "^11.1.1"
+    "mocha-ui-exports-request": "^1.2.0",
+    "should": "^11.1.1",
+    "swagger-connect": "^0.7.0"
   },
   "publishConfig": {
     "registry": "http://registry.npmjs.com/"
