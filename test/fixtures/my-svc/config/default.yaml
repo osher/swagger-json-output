@@ -13,29 +13,51 @@ swagger:
   # (see https://github.com/apigee-127/bagpipes)
   bagpipes:
     _output:
-      name:             index.js
-      beautifyJson:     true
-      includeErrObject: true
+      name:                 index.js #in real world - it should be `swagger-json-output`
+      beautifyJson:         true
+      includeErrStack:      true
 
     _router:
-      name: swagger_router
-      mockMode: false
-      mockControllersDirs: [ api/mocks ]
-      controllersDirs: [ api/controllers ]
+      name:                 swagger_router
+      controllersDirs:      [ api/controllers ]
+      controllersInterface: pipe
+      mockMode:             false
+      mockControllersDirs:  []
 
     _swagger_validate:
-      name: swagger_validator
-      validateResponse: true
+      name:                 swagger_validator
+      validateResponse:     false
 
-    # pipe for all swagger-node controllers
-    swagger_controllers:
+    set_on_both:
       - onError: _output
       - cors
+      - swagger_params_parser
+      - swagger_security
+      - _swagger_validate
+      - express_compatibility
+      - _router
+      - _output
+
+    set_only_on_error:
+      - onError: _output
+      - cors
+      - swagger_params_parser
       - swagger_security
       - _swagger_validate
       - express_compatibility
       - _router
 
+    set_only_as_last_fitting:
+      - onError: json_error_handler
+      - cors
+      - swagger_params_parser
+      - swagger_security
+      - _swagger_validate
+      - express_compatibility
+      - _router
+      - _output
+      
+      
     # pipe to serve swagger (endpoint is in swagger.yaml)
     swagger_raw:
       name: swagger_raw

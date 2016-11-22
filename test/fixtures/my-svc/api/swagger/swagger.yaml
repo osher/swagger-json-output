@@ -1,12 +1,12 @@
 swagger: "2.0"
 info:
   version: "0.0.1"
-  title: Hello World App
+  title: test-app
+  description: response is injectable via IPC messaging
 # during dev, should point to your local machine
 host: localhost:10010
 # basePath prefixes all resource paths 
 basePath: /
-# 
 schemes:
   # tip: remove http to make production-grade
   - http
@@ -18,13 +18,34 @@ consumes:
 produces:
   - application/json
 paths:
-  /hello:
-    # binds a127 app logic to a route
+  /set_on_both:
+    x-swagger-pipe: set_on_both
     x-swagger-router-controller: hello_world
     get:
       description: Returns 'Hello' to the caller
-      # used as the method name of the controller
-      operationId: hello
+      operationId: set_on_both
+      parameters:
+        - name: name
+          in: query
+          description: The name of the person to whom to say hello
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Response"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Response"
+  /set_only_on_error: 
+    x-swagger-pipe: set_only_on_error
+    x-swagger-router-controller: hello_world
+    get:
+      description: Returns 'Hello' to the caller
+      operationId: set_only_on_error
       parameters:
         - name: name
           in: query
@@ -36,25 +57,39 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/HelloWorldResponse"
+            $ref: "#/definitions/Response"
         # responses may fall through to errors
         default:
           description: Error
           schema:
-            $ref: "#/definitions/ErrorResponse"
+            $ref: "#/definitions/Response"
+  /set_only_as_last_fitting: 
+    x-swagger-pipe: set_only_as_last_fitting
+    x-swagger-router-controller: hello_world
+    get:
+      description: Returns 'Hello' to the caller
+      operationId: set_only_as_last_fitting
+      parameters:
+        - name: name
+          in: query
+          description: The name of the person to whom to say hello
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/Response"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Response"
+            
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
-  HelloWorldResponse:
-    required:
-      - message
-    properties:
-      message:
-        type: string
-  ErrorResponse:
-    required:
-      - message
-    properties:
-      message:
-        type: string
+  Response:
+    type:       object

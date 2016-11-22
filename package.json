@@ -6,8 +6,10 @@
   "scripts": {
     "test": "mocha",
     "prepush": "mocha",
-    "cover": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot",
-    "cover-enforce": "node node_modules/istanbul/lib/cli.js check-coverage --function 90 --lines 85 --branches 75"
+    "cover-run": "istanbul cover --dir ./coverage/unit-test node_modules/mocha/bin/_mocha test -- --reporter dot",
+    "cover-combine-reports": "istanbul report --root ./coverage --dir ./coverage/combined --format html",
+    "cover": "npm run cover-run && npm run cover-combine-reports",
+    "cover-enforce": "node node_modules/istanbul/lib/cli.js check-coverage --lines 85 --function 85 --branches 80"
   },
   "repository": {
     "type": "git",
@@ -21,6 +23,9 @@
   "dependencies": {
     "debug": "^2.3.3",
     "lodash": "^4.17.2"
+  },
+  "peerDependencies" : {
+    "swagger-node-runner": "^0.7.1"
   },
   "devDependencies": {
     "connect": "^3.5.0",

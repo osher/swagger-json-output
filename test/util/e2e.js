@@ -1,10 +1,7 @@
-/**
- * Created by vova on 22/11/2016.
- */
-
 var extend   = require('util')._extend;
 var fs       = require('fs');
-var run      = require('child_process').fork;
+var fork     = require('child_process').fork;
+var debug    = require('debug')('util/e2e');
 var log;
 
 var defaults = {
@@ -16,6 +13,8 @@ var defaults = {
     slow         : 5000
 };
 
+e2e.setupFixture = setupFixture;
+
 module.exports = e2e;
 
 function e2e(options) {
@@ -26,6 +25,10 @@ function e2e(options) {
     e2e.tearDown = function ctx_teardown(done) {
         tearDown(ctx, done)
     };
+    
+    e2e.setupFixture = function ctx_setupFixture(fixture, done) {
+        setupFixture(ctx, fixture, done)
+    }
 
     return function ctx_setup(done) {
         setup(ctx, this, done)
@@ -58,7 +61,10 @@ function setup(ctx, test, done) {
 
     var child =
         ctx.child =
-            run(ctx.args.shift(), ctx.args, { env: process.env, stdio: ['pipe', 'pipe', 'pipe', 'ipc'] } );
+            fork(ctx.args.shift(), ctx.args, {
+              env: process.env, 
+              stdio: ['pipe', 'pipe', 'pipe', 'ipc'] 
+            });
 
     child.stderr.on('data', function(data) {
         data = data + "";
@@ -88,10 +94,30 @@ function setup(ctx, test, done) {
 }
 
 /**
- @param {callback}  callback
+ @param {context} ctx
+ @param {callback} callback
  */
 function tearDown(ctx, done) {
     if (ctx.child.exitted) return done()
     ctx.child.on('--over--', done);
     ctx.child.send('die');
+}
+
+/**
+ @param {context} ctx
+ @param {callback} callback
+ @returns {Promise}
+ */
+function setupFixture(ctx, fixture, next) {
+    ctx.child.once('message', messageApproval);
+    debug("sending fixture %j", fixture)        
+    ctx.child.send(fixture);
+        
+    function messageApproval(ok) {
+    debug("fixture sent", ok)        
+      next( ok === "ok" 
+        ? null
+        : new Error("failed to setup server")
+      )
+    }
 }
