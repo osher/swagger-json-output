@@ -1,6 +1,6 @@
 {
-  "name": "swagger-output",
-  "version": "1.0.0",
+  "name": "swagger-json-output",
+  "version": "0.1.0",
   "description": "",
   "main": "lib",
   "scripts": {
@@ -17,9 +17,9 @@
   },
   "license": "SEE LICENSE IN LISENCE.md",
   "bugs": {
-    "url": "https://github.com/osher/swagger-output/issues"
+    "url": "https://github.com/osher/swagger-json-output/issues"
   },
-  "homepage": "https://github.com/osher/swagger-output#readme",
+  "homepage": "https://github.com/osher/swagger-json-output#readme",
   "dependencies": {
     "debug": "^2.3.3",
     "lodash": "^4.17.2"
