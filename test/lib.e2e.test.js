@@ -107,11 +107,12 @@ function runnerDefaultOutputSuite(options) {
 }
 
 function runnerDefaultErrorSuite(options) {
+    var rndFactor = Math.random()
     return {
-        "and error validation" : {
-            "then" : request({
-                url : SUT + options.path,
-                qs: { na: "scott" },
+        "and the error is a validation error from swagger_validation" : {
+            "then": request({
+                url:  SUT + options.path,
+                qs:   {}, //The parameter is name missing -> triggers validation error
                 json: true
             }).responds({
                 responseHeaders:  {
@@ -126,16 +127,13 @@ function runnerDefaultErrorSuite(options) {
                 },
                 responseBody: {
                     "should be valid JSON" : function(body) {
-                        console.log(body);
                         Should(body).be.an.Object();
                     },
                     "should have .message as the passed error's message": function(body) {
                         Should(body.message).eql("Validation errors");
                     },
-                    "should have .errors": function(body) {
-                        Should(body.errors).be.an.Object();
-                    },
-                    "should have .errors.code": function(body) {
+                    "should have .errors - be a Array of the validation Errors": function(body) {
+                        Should(body.errors).be.an.Array();
                         Should(body.errors[0].code).eql("INVALID_REQUEST_PARAMETER");
                     }
                 }
@@ -149,7 +147,9 @@ function runnerDefaultErrorSuite(options) {
                     headers:      { 'content-type' : 'text/x-inspect' },
                     body:         expectBody = { foo : "bar", rnd: Math.random() },
                     circularBody: false,
-                    error:        { message: "oupsy", statusCode: 505, data: "debugme"},
+                    //----------------------------------------------------------------------
+                    error:        { message: "oupsy", statusCode: 505, data: "debugme" + rndFactor},
+                    //----------------------------------------------------------------------
                     circularErr:  false
                 }, done)
 
@@ -176,8 +176,8 @@ function runnerDefaultErrorSuite(options) {
                     "should have .message as the passed error's message": function(body) {
                         Should(body.message).eql("oupsy")
                     },
-                    "should have .data": function(body) {
-                        Should(body.data).eql("debugme")
+                    "should include additional attributes that decorate the error object": function(body) {
+                        Should(body.data).eql("debugme" + rndFactor)
                     }
                 }
             })
@@ -190,8 +190,10 @@ function runnerDefaultErrorSuite(options) {
                     headers:      { 'content-type' : 'text/x-inspect' },
                     body:         expectBody = { foo : "bar", rnd: Math.random() },
                     circularBody: false,
+                    //----------------------------------------------------------------------
                     error:        { message: "oupsy", statusCode: 505, data: "debugme"},
-                    circularErr:  true
+                    circularErr:  true  // <-- causes circular reference in error
+                    //----------------------------------------------------------------------
                 }, done)
 
             },
@@ -214,8 +216,10 @@ function runnerDefaultErrorSuite(options) {
                     "should be valid JSON" : function(body) {
                         Should(body).be.an.Object();
                     },
-                    "should have .stringifyErr - as the message of the stringification error" : function(body) {
+                    "should have the format of the default error handler (not ours)" : function(body) {
+                        Should(body).have.property('message', 'unable to stringify error properly')
                         Should(body).have.property('stringifyErr', 'Converting circular structure to JSON');
+                        Should(body).have.property('originalErrInspect');
                     }
                 }
             })
