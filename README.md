@@ -38,11 +38,11 @@ If you're using the template created by `swagger` cli:
 1. Find the definition of your main pipe
 2. replace
 ```yaml
-      - onError: json_error_handler`
+      - onError: json_error_handler
 ```      
 with
 ```yaml
-      - onError: swagger-json-output`
+      - onError: swagger-json-output
 ```      
 
 ## Using it as output JSON formatter
