@@ -31,6 +31,7 @@ function hello(ctx, next) {
     }
     
     next(fixture.error, fixture.body);
+    delete fixture.error;    
 }
 
 function updateFixture(fixtureUpdate) {
