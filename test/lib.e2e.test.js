@@ -25,7 +25,7 @@ module.exports = {
       "when pipe ends with error" : onErrorPipeSuite({path: "/set_on_both"})
     }
   }
-}
+};
 
 function runnerDefaultOutputSuite(options) {
     var expectBody;
@@ -39,7 +39,7 @@ function runnerDefaultOutputSuite(options) {
               body:         expectBody = { foo : "bar", rnd: Math.random() },
               circularBody: false,
               error:        false,
-              circularErr:  false,
+              circularErr:  false
             }, done)
         },
         "then" : request({
@@ -74,7 +74,7 @@ function runnerDefaultOutputSuite(options) {
               circularBody: true, // <--- instructs test server to create circular reference in body
               //------------------------------------------------------------------------------------
               error:        false,
-              circularErr:  false,
+              circularErr:  false
             }, done)
         },
         "then" : request({
@@ -107,7 +107,121 @@ function runnerDefaultOutputSuite(options) {
 }
 
 function runnerDefaultErrorSuite(options) {
-    return "TBD"
+    return {
+        "and error validation" : {
+            "then" : request({
+                url : SUT + options.path,
+                qs: { na: "scott" },
+                json: true
+            }).responds({
+                responseHeaders:  {
+                    "should correct 'content-type' to 'application/json'" : function(headers) {
+                        Should(headers).have.property('content-type', 'application/json');
+                    }
+                },
+                and: {
+                    "statusCode should be as passed with the error" : function(res) {
+                        Should(res).have.property("statusCode", 400);
+                    }
+                },
+                responseBody: {
+                    "should be valid JSON" : function(body) {
+                        console.log(body);
+                        Should(body).be.an.Object();
+                    },
+                    "should have .message as the passed error's message": function(body) {
+                        Should(body.message).eql("Validation errors");
+                    },
+                    "should have .errors": function(body) {
+                        Should(body.errors).be.an.Object();
+                    },
+                    "should have .errors.code": function(body) {
+                        Should(body.errors[0].code).eql("INVALID_REQUEST_PARAMETER");
+                    }
+                }
+            })
+        },
+        "and error serializes well" : {
+            beforeAll: function(done){
+                rndFactor = Math.random();
+                e2e.setupFixture({
+                    statusCode:   201,
+                    headers:      { 'content-type' : 'text/x-inspect' },
+                    body:         expectBody = { foo : "bar", rnd: Math.random() },
+                    circularBody: false,
+                    error:        { message: "oupsy", statusCode: 505, data: "debugme"},
+                    circularErr:  false
+                }, done)
+
+            },
+            "then" : request({
+                url : SUT + options.path,
+                qs: { name: "scott" },
+                json: true
+            }).responds({
+                responseHeaders:  {
+                    "should correct 'content-type' to 'application/json'" : function(headers) {
+                        Should(headers).have.property('content-type', 'application/json');
+                    }
+                },
+                and: {
+                    "statusCode should be as passed with the error" : function(res) {
+                        Should(res).have.property("statusCode", 505)
+                    }
+                },
+                responseBody: {
+                    "should be valid JSON" : function(body) {
+                        Should(body).be.an.Object()
+                    },
+                    "should have .message as the passed error's message": function(body) {
+                        Should(body.message).eql("oupsy")
+                    },
+                    "should have .data": function(body) {
+                        Should(body.data).eql("debugme")
+                    }
+                }
+            })
+        },
+        "and error does not serializes well" : {
+            beforeAll: function(done){
+                rndFactor = Math.random();
+                e2e.setupFixture({
+                    statusCode:   201,
+                    headers:      { 'content-type' : 'text/x-inspect' },
+                    body:         expectBody = { foo : "bar", rnd: Math.random() },
+                    circularBody: false,
+                    error:        { message: "oupsy", statusCode: 505, data: "debugme"},
+                    circularErr:  true
+                }, done)
+
+            },
+            "then" : request({
+                url : SUT + options.path,
+                qs: { name: "scott" },
+                json: true
+            }).responds({
+                responseHeaders:  {
+                    "should correct 'content-type' to 'application/json'" : function(headers) {
+                        Should(headers).have.property('content-type', 'application/json');
+                    }
+                },
+                and: {
+                    "statusCode should be 500 (for the serialization error)" : function(res) {
+                        Should(res).have.property("statusCode", 500);
+                    }
+                },
+                responseBody: {
+                    "should be valid JSON" : function(body) {
+                        Should(body).be.an.Object();
+                    },
+                    "should have .stringifyErr - as the message of the stringification error" : function(body) {
+                        Should(body).have.property('stringifyErr', 'Converting circular structure to JSON');
+                    }
+                }
+            })
+        }
+
+    }
 }
 
 function onErrorPipeSuite(options) {
@@ -122,7 +236,7 @@ function onErrorPipeSuite(options) {
               body:         expectBody = { foo : "bar", rnd: Math.random() },
               circularBody: false,
               error:        { message: "oupsy", statusCode : 505, foo: "bar" },
-              circularErr:  false,
+              circularErr:  false
             }, done)
         },
         "then" : request({
@@ -169,7 +283,7 @@ function onErrorPipeSuite(options) {
               body:         expectBody = { foo : "bar", rnd: Math.random() },
               circularBody: false,
               error:        { message: "oupsy", statusCode : 505 },
-              circularErr:  true,
+              circularErr:  true
             }, done)
         },
         "then" : request({
@@ -212,5 +326,82 @@ function onErrorPipeSuite(options) {
 }
 
 function lastFittingOutputSuite(options) {
-    return "TBD"
+    var expectBody;
+    return {
+        "and output serializes well" : {
+            beforeAll: function(done) {
+                rndFactor = Math.random();
+                e2e.setupFixture({
+                    statusCode:   201,
+                    headers:      { 'content-type' : 'text/x-inspect' },
+                    body:         expectBody = { foo : "bar", rnd: Math.random() },
+                    circularBody: false,
+                    error:        false,
+                    circularErr:  false
+                }, done)
+            },
+            "then" : request({
+                url : SUT + options.path,
+                qs: { name: "scott" },
+                json: true
+            }).responds({
+                status:   201,
+                responseHeaders:  {
+                    "should correct 'content-type' to 'application/json'" : function(headers) {
+                        Should(headers).have.property('content-type', 'application/json');
+                    }
+                },
+                responseBody:     {
+                    "should  be valid JSON": function(body) {
+                        Should(body).be.an.Object();
+                    },
+                    "should be equal to expectBody" : function(body) {
+                        Should(body).eql(expectBody);
+                    }
+                }
+            })
+        },
+        "and output does not serialize well" : {
+            beforeAll: function(done) {
+                rndFactor = Math.random();
+                e2e.setupFixture({
+                    statusCode:   201,
+                    headers:      { 'content-type' : 'text/x-inspect' },
+                    body:         expectBody = { foo : "bar", rnd: Math.random() },
+                    //------------------------------------------------------------------------------------
+                    circularBody: true, // <--- instructs test server to create circular reference in body
+                    //------------------------------------------------------------------------------------
+                    error:        false,
+                    circularErr:  false
+                }, done)
+            },
+            "then" : request({
+                url : SUT + options.path,
+                qs: { name: "scott" },
+                json: true
+            }).responds({
+                responseHeaders:  {
+                    "should correct 'content-type' to 'application/json'" : function(headers) {
+                        Should(headers).have.property('content-type', 'application/json');
+                    }
+                },
+                responseBody: {
+                    "should be valid JSON": function(body) {
+                        Should(body).be.an.Object();
+                    },
+                    "should have .message": function(body) {
+                        Should(body.message).eql("unable to stringify body properly");
+                    },
+                    "should have .stringifyErr": function(body) {
+                        Should(body.stringifyErr).eql("Converting circular structure to JSON");
+                    }
+                },
+                and: {
+                    "statusCode should be 500" : function(res) {
+                        Should(res.statusCode).eql(500);
+                    }
+                }
+            })
+        }
+    }
 }

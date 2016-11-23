@@ -5,11 +5,7 @@ var e2e     = require('./util/e2e');
 
 module.exports = { 
   "swagger-result" : {
-    beforeAll: e2e({
-      svc:          "test/fixtures/my-svc/app.js",
-      logPath:      "./e2e-log.log"
-    }),
-    afterAll: e2e.tearDown,
+
     "should be a factory function that names 2 arguments - fittingDef, bagpipes" : function() {
         Should(sut)
           .be.a.Function()
