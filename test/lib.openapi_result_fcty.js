@@ -10,6 +10,7 @@ module.exports = {
             Should(sut).be.a.Function().have.property("length", 2)
         }
     },
+    "when used with .beautifyJson true" : "checked in e2e tests",
     "when used with .beautifyJson false" : {
         beforeAll: function(done){
             ctxAndFittingDefGenerator(true);

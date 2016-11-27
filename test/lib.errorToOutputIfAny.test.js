@@ -9,63 +9,65 @@ module.exports = {
     "should be a function that names 2 arugment - ctx, fittingDef" : function() {
         Should(sut).be.a.Function().have.property("length", 2)
     },
-    "when used with no error" : {
-      "should  be unchanged" : function() {
+    "when used with ctx that has no error" : {
+      "should lave ctx unchanged" : function() {
         var ctx = {};
         sut(ctx);
         Should(ctx).eql({});
       }
     },
-    "when used with error" : {
-      "and use error stack": {
-        beforeAll: function(done){
-          ctxAndFittingDefGenerator(true);
-          try {
-            throw new Error("Something unexpected has occurred.");
-          } catch (e) {
-            ctx.error = e;
-            sut(ctx,fittingDef);
-            done();
-          }
-        },
-        "should have .output" : function() {
-          Should(ctx.output).be.an.Object();
-        },
-        "should have .message equal to 'Something unexpected has occurred.'" : function() {
-          Should(ctx.output.message).eql('Something unexpected has occurred.');
-        },
-        "should have .stack" : function() {
+    "when used with context that has an error" : {
+      "and configured with truthful fittingDef.includeErrStack": {
+        "and error does not have .statusCode" : {
+          beforeAll: function(done){
+            resetCtxAndFittingDef( /* use includeErrStack: */ true );
+            try {
+              throw new Error("Something unexpected has occurred.");
+            } catch (e) {
+              ctx.error = e;
+              sut(ctx,fittingDef);
+              done();
+            }
+          },
+          "should have .output" : function() {
+            Should(ctx.output).be.an.Object();
+          },
+          "should have .message as the error message provided on the error object" : function() {
+            Should(ctx.output.message).eql('Something unexpected has occurred.');
+          },
+          "should have .stack as Array of lines in the stack" : function() {
           Should(ctx.output.stack).be.an.Array();
         }
-      },
-      "and use error stack and statusCode ":{
-        beforeAll: function(done){
-          ctxAndFittingDefGenerator(true);
-          try {
-            throw new Error("Something unexpected has occurred.");
-          } catch (e) {
-            ctx.error = e;
-            ctx.error.statusCode = 500;
-            sut(ctx,fittingDef);
-            done();
+        },
+        "and error has .statusCode ":{
+          beforeAll: function(done){
+            resetCtxAndFittingDef(true);
+            try {
+              throw new Error("Something unexpected has occurred.");
+            } catch (e) {
+              ctx.error = e;
+              ctx.error.statusCode = 500;
+              sut(ctx,fittingDef);
+              done();
+            }
+          },
+          "should have .output" : function() {
+            Should(ctx.output).be.an.Object();
+          },
+          "should have .statusCode set as the statusCode found on the error" : function() {
+            Should(ctx.statusCode).eql(500);
+          },
+          "should have .message as the error message provided on the error object" : function() {
+            Should(ctx.output.message).eql('Something unexpected has occurred.');
+          },
+          "should have .stack as Array of lines in the stack" : function() {
+            Should(ctx.output.stack).be.an.Array();
           }
-        },
-        "should have .output" : function() {
-          Should(ctx.output).be.an.Object();
-        },
-        "should have .statusCode equal 200" : function() {
-          Should(ctx.statusCode).eql(500);
-        },
-        "should have .message equal to 'Something unexpected has occurred.'" : function() {
-          Should(ctx.output.message).eql('Something unexpected has occurred.');
-        },
-        "should have .stack" : function() {
-          Should(ctx.output.stack).be.an.Array();
         }
       },
-      "and not use error stack ":{
+      "and configured with FALSEful fittingDef.includeErrStack ":{
         beforeAll: function(done){
-          ctxAndFittingDefGenerator(false);
+          resetCtxAndFittingDef( /* use includeErrStack: */ false);
           try {
             throw new Error("Something unexpected has occurred.");
           } catch (e) {
@@ -88,7 +90,7 @@ module.exports = {
   }
 };
 
-function ctxAndFittingDefGenerator(errStackFlag){
+function resetCtxAndFittingDef(errStackFlag){
   ctx = {
     error: null,
     response: {},
