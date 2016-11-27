@@ -19,7 +19,7 @@ module.exports = {
         Should(ctx.output).be.an.Object();
       },
 
-      "when used with content type JSON" : {
+      "when used with context that specifies content-type 'application/json' in ctx.headers" : {
         beforeAll: function(done){
           ctxAndFittingDefGenerator(true);
           ctx.headers["content-type"] = 'application/json';

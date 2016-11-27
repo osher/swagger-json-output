@@ -1,6 +1,7 @@
 process.env.TEST_MODE = true;
 var sut     = require('../').assureCorrectResponseContentType;
 var request = require('mocha-ui-exports-request');
+var fs      = require('fs');
 var ctx, fittingDef;
 
 module.exports = { 
@@ -51,11 +52,11 @@ module.exports = {
         "with specific content-type that is not 'applicaiton/json' (but is a part of the produces)":{
             beforeAll: function(done){
                 ctxAndFittingDefGenerator(true);
+                ctx.headers["content-type"] = 'X';
                 ctx.request.headers = {
                       accept:'text/x-inspect'
                 };
                 ctx.response.headers ={};
-                ctx.headers ={};
                 sut(ctx, fittingDef);
                 done();
               },
@@ -63,7 +64,10 @@ module.exports = {
                 Should(ctx.response.headers).have.property('content-type', 'text/x-inspect');
                 Should(ctx.headers).have.property('content-type', 'text/x-inspect');
             },
-            "should warn about overwriten content-type" : null
+            "should warn about overwriten content-type" : function(){
+                var contents = fs.readFileSync('unit-test-log.log', 'utf8');
+                Should(contents).be.an.String();
+            }
         }
     }
   }
@@ -73,9 +77,7 @@ module.exports = {
 function ctxAndFittingDefGenerator(errStackFlag){
   ctx = {
     error: null,
-    headers:{
-
-    },
+    headers:{},
     response: {
       getHeader:getHeader,
       setHeader:setHeader,
@@ -87,17 +89,28 @@ function ctxAndFittingDefGenerator(errStackFlag){
                 produces:[
                     'application/json',
                     'text/x-inspect'
-                ]
+                ],
+                path: '/foo'
             }
         }
     },
     statusCode: null,
     input: null,
-    output: null
+    output: null,
+    log:{
+        warn:warn
+    }
   };
   fittingDef = {
     includeErrStack: (errStackFlag)? true: false
   }
+}
+
+function warn(obj, message, v1, v2 ,v3){
+    message = message.replace("[%s]", v1);
+    message = message.replace("[%s]", v2);
+    message = message.replace("[%s]", v3);
+    fs.writeFileSync("unit-test-log.log", message);
 }
 
 function getHeader(key){
