@@ -1,6 +1,7 @@
 process.env.TEST_MODE = true;
 var sut     = require('../').assureStatusCode;
 var request = require('mocha-ui-exports-request');
+var ctx;
 
 module.exports = { 
   "swagger-json-output~assureStatusCode" : {
@@ -9,7 +10,7 @@ module.exports = {
     },
     "when used with no error" : {
       "should  have .statusCode 200" : function() {
-        var ctx = {
+        ctx = {
           error: null,
           response: {},
           request: {},
@@ -24,7 +25,7 @@ module.exports = {
     "when used with error" : {
       "and  provide ctx.statusCode":{
         "should  have .statusCode bigger 400" : function() {
-          var ctx = {
+          ctx = {
             error: true,
             response: {},
             request: {},
@@ -38,7 +39,7 @@ module.exports = {
       },
       "and  provide response.statusCode":{
         "should  have .statusCode bigger 400" : function() {
-          var ctx = {
+          ctx = {
             error: true,
             response: {
               statusCode: 450
@@ -54,7 +55,7 @@ module.exports = {
       },
       "and  provide err.status":{
         "should  have .statusCode bigger 400" : function() {
-          var ctx = {
+          ctx = {
             error: {
               status:505
             },
@@ -70,7 +71,7 @@ module.exports = {
       },
       "and  use default statusCode":{
         "should  have .statusCode equal 500" : function() {
-          var ctx = {
+          ctx = {
             error: {},
             response: {},
             request: {},
