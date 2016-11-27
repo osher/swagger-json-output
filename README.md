@@ -1,19 +1,24 @@
 swagger-json-output
 ===================
 
-Used with `swagger-node-runner`, this is a cherry picked pipe fitting to handle
-both errors and json results.
+Used with [`swagger-node-runner`][1], this is a cherry picked pipe fitting to handle
+yielded errors and/or yielded results to JSON.
 
-This fitting is useful only for projects that are using `swagger-node-runner` 
+
+This fitting is useful only for projects that are using [`swagger-node-runner`][1]
 version `0.7` or above.
 
 
 ### Important
 
-The fitting sets for `swagger-node-runner` the `ctx.statusCode` and `ctx.output`
-which in turn are used to emit the response. 
+Generally, the fitting sets for [`swagger-node-runner`][1] the `ctx.statusCode`
+and `ctx.output` based on `ctx.error` and `ctx.output` that it is provided with,
+which in turn are used by [`swagger-node-runner`][1] it to emit the response, as 
+seen at the [`_finish` handler][2] of the underlying `connect_middleware`.
 
-It works with `error`, `statusCode`, and `output` that it finds on the context.
+
+This pipe works with `error`, `statusCode`, and `output` that it finds on the 
+context that it's given.
 As a result, it cannot work with data passed to `response.write` nor to 
 `response.writeHead`.
 
@@ -23,6 +28,9 @@ the `next` callback, and should not use not use the response object to write to
 the response or response headers.**
 
 If you cannot work this way, this fitting is not for you :(
+
+We recommend to work with [`controllerInterface: pipe`][3].
+
 
 ## installing
 ```bash
@@ -61,6 +69,13 @@ Regardless to errors, user controllers are expected to pass the response body
 as 2nd argument to the `next` callback. This value is passed by `bagpipes` to 
 this fitting as `context.output`.
 
+As this fitting finishes, wether by error or not - the context has:
+ - a defined statusCode
+ - a defined response content-type, matching `Accept` http header **and** the 
+   `produces` defined on the operation.
+ - a well-formatted body (currently guaranteed only for application/json)
+
+
 Flow:
  - **In case of error**, make sure statusCode is escalated to `>= 400` by using the first code
    that is indeed set and is `>= 400`:
@@ -84,8 +99,7 @@ Flow:
         - `stringifyErr`: the stringification error message
         - `bodyInspect`: Array lines resulted by `util.inspect`ing the `body`.
 
-As this fitting finishes, the context has a well-formatted 
-        
+       
 ## Configuring the fitting 
 Supported options:
  - beautifyJson
@@ -114,6 +128,20 @@ Example:
       - _router
       - _output
 ```        
+## Future
+ - design handling of multiple content-types
 
+## Contribute
+ - Using PRs :).
+   If you intend to add functionality - please discuss it with us first.
+ - make sure all tests pass
+ 
+ Thanks!
 
+## Lisence
 
+MIT, and that's it :)
+ 
+[1]: https://www.npmjs.com/package/swagger-node-runner
+[2]: https://github.com/theganyo/swagger-node-runner/blob/master/lib/connect_middleware.js#L68
+[3]: https://github.com/theganyo/swagger-node-runner/wiki/Controllers-Interface
