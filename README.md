@@ -102,24 +102,29 @@ Flow:
        
 ## Configuring the fitting 
 Supported options:
- - beautifyJson
  - `includeErrObject` - whenever truthful, errors are captured and format
+ - `beautifyJson` - meant for Dev/Integration envs, where you want to `curl` your API and just read.
+   The error-stack is optimized for this beautification.
 
 1. Create a fitting definition before your pipe
 2. Use the configured fitting instead the raw fitting name. 
 
 Example:
+
+in `default.yaml`
 ```yaml
   bagpipes: 
     _output:
-      name:             swagger-json-output
-      beautifyJson:     true
-      includeErrObject: true
+      name:                   swagger-json-output
+      beautifyJson:           false
+      includeErrObject:       false
 
-    #... more fitting definitions
+    _router:
+      name:                   swagger_router
+      controllersInterface:   pipe
 
     swagger_controllers:
-      - onError: _output
+      - onError:              _output
       - swagger_cors
       - swagger_params_parser
       - swagger_security
@@ -127,7 +132,15 @@ Example:
       - express_compatibility
       - _router
       - _output
-```        
+``` 
+
+in `dev.yaml`
+```yaml
+  bagpipes: 
+    _output:
+      beautifyJson:           true
+      includeErrObject:       true
+```       
 ## Future
  - design handling of multiple content-types
 
