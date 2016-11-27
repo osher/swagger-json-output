@@ -5,10 +5,9 @@ var fittingDef;
 var ctx;
 
 module.exports = {
-    "swagger-json-output" : {
-        "should be a function that names 2 arugment - fittingDef, bagpipes" : function() {
-            Should(sut).be.a.Function().have.property("length", 2)
-        }
+  "swagger-json-output" : {
+    "should be a function that names 2 arugment - fittingDef, bagpipes" : function() {
+        Should(sut).be.a.Function().have.property("length", 2)
     },
     "when used with .beautifyJson true" : "checked in e2e tests",
     "when used with .beautifyJson false" : {
@@ -36,6 +35,7 @@ module.exports = {
             Should(ctx.output).eql('Hello world.');
         }
     }
+  }
 };
 
 
