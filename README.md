@@ -98,6 +98,7 @@ Flow:
         - `message`: `unable to stringify body properly`,
         - `stringifyErr`: the stringification error message
         - `bodyInspect`: Array lines resulted by `util.inspect`ing the `body`.
+ - if need use specific setting or formatting to context, create ctx._preOutput function and changed the context
 
        
 ## Configuring the fitting 
