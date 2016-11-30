@@ -144,7 +144,7 @@ in `dev.yaml`
       includeErrObject:       true
 ```      
 
-## Last minute modifications
+## Last minute modifications to output
 
 If you need to perform a last-minute modification to the output or formatting 
 to context, you can provide a synchronous handler and place it on the context
