@@ -144,7 +144,7 @@ in `dev.yaml`
       includeErrObject:       true
 ```      
 
-##
+## Last minute modifications
 
 If you need to perform a last-minute modification to the output or formatting 
 to context, you can provide a synchronous handler and place it on the context
@@ -168,7 +168,13 @@ function lastMomentModifyCtx(ctx) {
 }
 ```
 
+The usecase that brought this feature is a proprietary fitting that executes 
+early in the pipeline, collects tools (di) and prepares an envelope response,
+where any reponse provided by any step must be contained in this envelope.
 
+So, in fact, the fitting does all the di and prepare the envelope before 
+all user-code parts (mainly security-handlers and router controllers), and
+uses the hook to enrich and contain the response using the `ctx._preOutput`.
  
 ## Future
  - design handling of multiple content-types
