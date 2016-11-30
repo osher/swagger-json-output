@@ -1,5 +1,4 @@
-swagger-json-output
-===================
+#swagger-json-output
 
 Used with [`swagger-node-runner`][1], this is a cherry picked pipe fitting to handle
 yielded errors and/or yielded results to JSON.
