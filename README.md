@@ -146,9 +146,8 @@ in `dev.yaml`
 
 ## Last minute modifications to output
 
-If you need to perform a last-minute modification to the output or formatting 
-to context, you can provide a synchronous handler and place it on the context
-as `ctx._preOutput`.
+If you need to perform a last-minute modification to the output, you can 
+provide a synchronous handler and place it on the context as `ctx._preOutput`.
 
 The function is provided one argument - the context itself, so you don't have
 to use the keyword `this`.
