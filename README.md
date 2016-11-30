@@ -158,7 +158,8 @@ Example:
 ```javascript
 module.exports = function(fittingDef) {
   return function(ctx, next) {
-      ctx._preOutput = lastMomentModifyCtx
+      ctx._preOutput = lastMomentModifyCtx;
+      next()
   }
 }
 
