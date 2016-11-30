@@ -1,8 +1,8 @@
 swagger-result
 ================
 
-## 1.1.1
- - fixes on Readme - readme had some incorrect/misleading info. 
+## 1.1.1, 1.1.2
+ - fixes some incorrect/misleading info on README.md. 
    No code changes involved.
 
 ## 1.1.0
