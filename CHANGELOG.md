@@ -1,6 +1,10 @@
 swagger-result
 ================
 
+## 1.1.1
+ - fixes on Readme - readme had some incorrect/misleading info. 
+   No code changes involved.
+
 ## 1.1.0
  - support ctx._preOutput - additional setting and formatting for context
  
