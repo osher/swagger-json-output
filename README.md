@@ -169,11 +169,13 @@ function lastMomentModifyCtx(ctx) {
 
 The usecase that brought this feature is a proprietary fitting that executes 
 early in the pipeline, collects tools (di) and prepares an envelope response,
-where any reponse provided by any step must be contained in this envelope.
+where by corporate rules any reponse provided by any step must be contained in
+this envelope.
 
 So, in fact, the fitting does all the di and prepare the envelope before 
-all user-code parts (mainly security-handlers and router controllers), and
-uses the hook to enrich and contain the response using the `ctx._preOutput`.
+all user-code parts (mainly security-handlers and router controllers), gathers
+data to this envelope as execution of the request progresses, and uses the hook 
+to enrich and contain the response using the `ctx._preOutput` hook.
  
 ## Future
  - design handling of multiple content-types
