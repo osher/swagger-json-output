@@ -90,6 +90,8 @@ Flow:
     - creates `context.output` as a serializable clone of the error, making
       sure the clone will include the `err.message` and `err.stack` if any,
       together with any enumerable property that the error is decorated with.
+ - if `ctx._preOutput` handler is found - execute it, and pass it the context as argument.
+   The handler is executed synchronously (no callback involved).
  - if the `content-type` of the response should be JSON - it formats the  
    output as JSON.
    Whenever the serialization fails 
@@ -98,7 +100,6 @@ Flow:
         - `message`: `unable to stringify body properly`,
         - `stringifyErr`: the stringification error message
         - `bodyInspect`: Array lines resulted by `util.inspect`ing the `body`.
- - if need use specific setting or formatting to context, create ctx._preOutput function and changed the context
 
        
 ## Configuring the fitting 
@@ -141,7 +142,34 @@ in `dev.yaml`
     _output:
       beautifyJson:           true
       includeErrObject:       true
-```       
+```      
+
+##
+
+If you need to perform a last-minute modification to the output or formatting 
+to context, you can provide a synchronous handler and place it on the context
+as `ctx._preOutput`.
+
+The function is provided one argument - the context itself, so you don't have
+to use the keyword `this`.
+
+Example:
+
+```javascript
+module.exports = function(fittingDef) {
+  return function(ctx, next) {
+      ctx._preOutput = lastMomentModifyCtx
+  }
+}
+
+function lastMomentModifyCtx(ctx) {
+    //ctx.output - will contain the output, or the output created 
+    //  from a thrown/yielded error
+}
+```
+
+
+ 
 ## Future
  - design handling of multiple content-types
 

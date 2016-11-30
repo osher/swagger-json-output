@@ -9,7 +9,7 @@ module.exports = {
         "should be a function that names 1 arugment - ctx" : function() {
             Should(sut).be.a.Function().have.property("length", 1)
         },
-        "when used with ctx._preOutput is null" : {
+        "when used with ctx._preOutput is null (no handler)" : {
             beforeAll: function(done){
                 ctxAndFittingDefGenerator(true);
                 ctx.request.headers = {
@@ -21,11 +21,11 @@ module.exports = {
                 done();
 
             },
-            "Should not changed":function(){
+            "should not change the context":function(){
                 Should(ctx).eql(cloneCtx);
             }
         },
-        "when used with ctx._preOutput is a function" : {
+        "when used with ctx._preOutput as a function" : {
             beforeAll: function(done){
                 ctxAndFittingDefGenerator(true);
                 ctx.request.headers = {
@@ -41,7 +41,7 @@ module.exports = {
                 Should(ctx.output).eql('context was changed');
             }
         },
-        "when used with ctx._preOutput is not a function" : {
+        "when used with ctx._preOutput that is not a function" : {
             beforeAll: function(done){
                 ctxAndFittingDefGenerator(true);
                 ctx.request.headers = {
@@ -53,16 +53,19 @@ module.exports = {
                 done();
 
             },
-            "Should have ctx.output":function(){
+            "Should have ctx.output": function (){
                 Should(ctx.output).be.an.Object();
             },
-            "Should have ctx.output.message":function(){
-                Should(ctx.output.message).eql('unable use preOutput');
+            "Should have ctx.output.message": function (){
+                Should(ctx.output.message).eql('error invoking _preOutput handler');
             },
-            "Should have ctx.output.error":function(){
+            "Should have ctx.output.error": function (){
                 Should(ctx.output.error).eql('ctx._preOutput is not a function');
             },
-            "Should have ctx.statusCode equal 500":function(){
+            "Should have ctx.output.stack": function (){
+                Should(ctx.output.stack).be.a.String();
+            },
+            "Should have ctx.statusCode equal 500": function (){
                 Should(ctx.statusCode).eql(500);
             }
         }
