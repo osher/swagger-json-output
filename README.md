@@ -85,10 +85,11 @@ Flow:
  - assure that the `content-type` of the response matches the content-type
    defined by the `produces` section of the `openapi-spec` of the processed
    operation.
- - ** In case of error**, AND `includeErrObject` is truthful: 
+ - ** In case of error**: 
     - creates `context.output` as a serializable clone of the error, making
-      sure the clone will include the `err.message` and `err.stack` if any,
-      together with any enumerable property that the error is decorated with.
+      sure the clone will include the `err.message` and if  `includeErrStack` 
+      is truthful - `err.stack` as well, together with any enumerable property
+      that the error is decorated with.
  - if `ctx._preOutput` handler is found - execute it, and pass it the context as argument.
    The handler is executed synchronously (no callback involved).
  - if the `content-type` of the response should be JSON - it formats the  
@@ -103,7 +104,8 @@ Flow:
        
 ## Configuring the fitting 
 Supported options:
- - `includeErrObject` - whenever truthful, errors are captured and format
+ - `includeErrStack` - whenever truthful, in case of error is thrown or yielded
+    by fittings in the pipe, the error stack is included in responses.
  - `beautifyJson` - meant for Dev/Integration envs, where you want to `curl` your API and just read.
    The error-stack is optimized for this beautification.
 
@@ -118,7 +120,7 @@ in `default.yaml`
     _output:
       name:                   swagger-json-output
       beautifyJson:           false
-      includeErrObject:       false
+      includeErrStack:        false
 
     _router:
       name:                   swagger_router
@@ -140,7 +142,7 @@ in `dev.yaml`
   bagpipes: 
     _output:
       beautifyJson:           true
-      includeErrObject:       true
+      includeErrStack:        true
 ```      
 
 ## Last minute modifications to output
