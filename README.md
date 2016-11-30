@@ -181,7 +181,8 @@ uses the hook to enrich and contain the response using the `ctx._preOutput`.
 
 ## Contribute
  - Using PRs :).
-   If you intend to add functionality - please discuss it with us first.
+   If you intend to add functionality - please discuss it with us first on an 
+   issue - just to help maintain the spirit of the project :)
  - make sure all tests pass
  
  Thanks!
