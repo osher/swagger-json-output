@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://git.mobimate.local/worldmate/swagger-output"
+    "url": "https://github.com/osher/swagger-json-output"
   },
   "license": "SEE LICENSE IN LISENCE.md",
   "bugs": {
