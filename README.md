@@ -1,5 +1,4 @@
-swagger-json-output
-===================
+#swagger-json-output
 
 Used with [`swagger-node-runner`][1], this is a cherry picked pipe fitting to handle
 yielded errors and/or yielded results to JSON.
@@ -86,10 +85,11 @@ Flow:
  - assure that the `content-type` of the response matches the content-type
    defined by the `produces` section of the `openapi-spec` of the processed
    operation.
- - ** In case of error**, AND `includeErrObject` is truthful: 
+ - ** In case of error**: 
     - creates `context.output` as a serializable clone of the error, making
-      sure the clone will include the `err.message` and `err.stack` if any,
-      together with any enumerable property that the error is decorated with.
+      sure the clone will include the `err.message` and if  `includeErrStack` 
+      is truthful - `err.stack` as well, together with any enumerable property
+      that the error is decorated with.
  - if `ctx._preOutput` handler is found - execute it, and pass it the context as argument.
    The handler is executed synchronously (no callback involved).
  - if the `content-type` of the response should be JSON - it formats the  
@@ -104,7 +104,8 @@ Flow:
        
 ## Configuring the fitting 
 Supported options:
- - `includeErrObject` - whenever truthful, errors are captured and format
+ - `includeErrStack` - whenever truthful, in case of error is thrown or yielded
+    by fittings in the pipe, the error stack is included in responses.
  - `beautifyJson` - meant for Dev/Integration envs, where you want to `curl` your API and just read.
    The error-stack is optimized for this beautification.
 
@@ -119,7 +120,7 @@ in `default.yaml`
     _output:
       name:                   swagger-json-output
       beautifyJson:           false
-      includeErrObject:       false
+      includeErrStack:        false
 
     _router:
       name:                   swagger_router
@@ -141,14 +142,13 @@ in `dev.yaml`
   bagpipes: 
     _output:
       beautifyJson:           true
-      includeErrObject:       true
+      includeErrStack:        true
 ```      
 
-##
+## Last minute modifications to output
 
-If you need to perform a last-minute modification to the output or formatting 
-to context, you can provide a synchronous handler and place it on the context
-as `ctx._preOutput`.
+If you need to perform a last-minute modification to the output, you can 
+provide a synchronous handler and place it on the context as `ctx._preOutput`.
 
 The function is provided one argument - the context itself, so you don't have
 to use the keyword `this`.
@@ -158,7 +158,8 @@ Example:
 ```javascript
 module.exports = function(fittingDef) {
   return function(ctx, next) {
-      ctx._preOutput = lastMomentModifyCtx
+      ctx._preOutput = lastMomentModifyCtx;
+      next()
   }
 }
 
@@ -168,14 +169,23 @@ function lastMomentModifyCtx(ctx) {
 }
 ```
 
+The usecase that brought this feature is a proprietary fitting that executes 
+early in the pipeline, collects tools (di) and prepares an envelope response,
+where by corporate rules any reponse provided by any step must be contained in
+this envelope.
 
+So, in fact, the fitting does all the di and prepare the envelope before 
+all user-code parts (mainly security-handlers and router controllers), gathers
+data to this envelope as execution of the request progresses, and uses the hook 
+to enrich and contain the response using the `ctx._preOutput` hook.
  
 ## Future
  - design handling of multiple content-types
 
 ## Contribute
  - Using PRs :).
-   If you intend to add functionality - please discuss it with us first.
+   If you intend to add functionality - please discuss it with us first on an 
+   issue - just to help maintain the spirit of the project :)
  - make sure all tests pass
  
  Thanks!
