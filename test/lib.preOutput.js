@@ -6,8 +6,8 @@ var ctx, cloneCtx;
 
 module.exports = {
     "swagger-json-output~preOutput" : {
-        "should be a function that names 1 arugment - ctx" : function() {
-            Should(sut).be.a.Function().have.property("length", 1)
+        "should be a function that names 2 arugment - err, ctx" : function() {
+            Should(sut).be.a.Function().have.property("length", 2)
         },
         "when used with ctx._preOutput is null (no handler)" : {
             beforeAll: function(done){
@@ -17,7 +17,7 @@ module.exports = {
                 };
                 ctx.output = 'Hello world.';
                 cloneCtx = Object.assign({}, ctx);
-                sut(ctx);
+                sut(null, ctx);
                 done();
 
             },
@@ -33,7 +33,7 @@ module.exports = {
                 };
                 ctx.output = 'Hello world.';
                 ctx._preOutput = preOutput;
-                sut(ctx);
+                sut(null, ctx);
                 done();
 
             },
@@ -49,7 +49,7 @@ module.exports = {
                 };
                 ctx.output = 'Hello world.';
                 ctx._preOutput = 'Not a function';
-                sut(ctx);
+                sut(null, ctx);
                 done();
 
             },
@@ -110,6 +110,6 @@ function setHeader(key, value){
     return ctx.response.headers[key.toLowerCase()] = value;
 }
 
-function preOutput(key){
+function preOutput(err, key){
     return ctx.output = 'context was changed';
 }
