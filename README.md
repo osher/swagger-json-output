@@ -31,6 +31,18 @@ If you cannot work this way, this fitting is not for you :(
 We recommend to work with [`controllerInterface: pipe`][3].
 
 
+**NOTE:** there are two cases which cannot be handled by this pipe fitting:
+ - 405 error, when user tries on a path that is found in openapi-spec doc an
+   HTTP verb that is not found in the doc.
+ - 405 error, when the openapi-spec doc points to a non-existing pipe (value 
+   in `x-swagger-pipe` attribute - may be derrived by the default-pipe).
+   
+In both these cases the `swagger-node-runner` infra rejects the request before
+it enters the pipe. This package works as a fitting, and runs only as part of
+a pipe. 
+
+Except for these 2 cases - it will do the trick :)
+
 ## installing
 ```bash
 npm install swagger-json-output --save
@@ -154,7 +166,7 @@ The function is provided two arguments
   - reference to error from which body is created (or null, if body is not 
     result of an error)
   - the context itself, so you don't have to use the keyword `this`.
-
+  
 Example:
 
 ```javascript
