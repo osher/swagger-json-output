@@ -150,8 +150,10 @@ in `dev.yaml`
 If you need to perform a last-minute modification to the output, you can 
 provide a synchronous handler and place it on the context as `ctx._preOutput`.
 
-The function is provided one argument - the context itself, so you don't have
-to use the keyword `this`.
+The function is provided two arguments
+  - reference to error from which body is created (or null, if body is not 
+    result of an error)
+  - the context itself, so you don't have to use the keyword `this`.
 
 Example:
 
@@ -164,7 +166,7 @@ module.exports = function(fittingDef) {
 }
 
 function lastMomentModifyCtx(err, ctx) {
-    //err -        if the output was a result of an error - this will be
+    //err -        if the output is a result of an error - this will be
     //             the original error that was formatted into the body
     //ctx.output - will contain the output, or the output created 
     //             from a thrown/yielded error
