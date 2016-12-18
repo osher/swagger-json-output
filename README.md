@@ -163,9 +163,11 @@ module.exports = function(fittingDef) {
   }
 }
 
-function lastMomentModifyCtx(ctx) {
+function lastMomentModifyCtx(err, ctx) {
+    //err -        if the output was a result of an error - this will be
+    //             the original error that was formatted into the body
     //ctx.output - will contain the output, or the output created 
-    //  from a thrown/yielded error
+    //             from a thrown/yielded error
 }
 ```
 
